@@ -1,0 +1,183 @@
+:root{
+  --bg:#0b0f13;
+  --panel:#0f1720;
+  --text:#e6eef5;
+  --muted:#9fb0c4;
+  --flame-brightness: 1; /* 0..1 */
+  --overlay-opacity: 0.35; /* 0..1 darkness of scene */
+  --flame-scale: 1;
+  --scene-color: transparent; /* background color chosen by user */
+  --glow-size: calc(24px * var(--flame-brightness));
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--text);background:radial-gradient(1200px circle at 20% 10%, #1b2330 0%, var(--bg) 50%);}
+
+.app{max-width:980px;margin:24px auto;padding:20px;}
+header h1{margin:0;font-size:1.6rem}
+.muted{color:var(--muted);margin-top:6px}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0;}
+.control-row{display:flex;gap:10px;align-items:center;background:transparent;padding:6px;border-radius:8px;}
+.control-row span{min-width:120px;color:var(--muted);font-size:0.95rem}
+.control-row input[type="range"]{width:160px}
+.small span{min-width:70px;font-size:0.9rem}
+
+.btn{background:#2a3947;color:var(--text);border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.music-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.stage{margin-top:12px;display:flex;justify-content:center}
+.scene{
+  position:relative;
+  width:340px;
+  height:480px;
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:40px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  /* scene color is the base layer; subtle gradient sits above it */
+  background: var(--scene-color), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+}
+
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,var(--overlay-opacity));pointer-events:none;transition:background 240ms ease;}
+
+.candle{position:relative;width:120px;height:260px;display:flex;align-items:flex-start;flex-direction:column;gap:8px;outline:none}
+.candle:focus{box-shadow:0 0 0 4px rgba(100,180,255,0.12);border-radius:16px}
+
+/* wick */
+.wick{width:4px;height:16px;background:#26160e;margin:10px auto 0;border-radius:2px;position:relative;z-index:10}
+
+/* candle body */
+.body{width:100%;height:220px;border-radius:16px;background:linear-gradient(#fff,#f0f0f0);box-shadow:inset 0 6px 14px rgba(0,0,0,0.08), 0 10px 30px rgba(0,0,0,0.4);position:relative;z-index:2}
+
+/* skins */
+.candle.classic .body{
+  /* use the attached image as the default skin (place the file at assets/gingerbread-pattern.jpg) */
+  background:
+    url("istockphoto-869642528-612x612.jpg") center/cover no-repeat,
+    linear-gradient(180deg,#fff,#f1efe9);
+}
+.candle.striped .body{
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,0.06) 50%, rgba(0,0,0,0.03) 50%),
+    linear-gradient(180deg,#f7f1ea,#efe6da);
+  background-size: 12px 100%, auto;
+}
+.candle.green .body{background:linear-gradient(180deg,#e7f8ea,#d0f1d6);box-shadow:inset 0 6px 14px rgba(0,0,0,0.04), 0 8px 22px rgba(0,0,0,0.35)}
+
+/* flame visuals */
+.flame{width:72px;height:115px;display:block;margin:0 auto;transform-origin:50% 80%;z-index:8;pointer-events:none;filter:drop-shadow(0 0 calc(18px * var(--flame-brightness)) rgba(255,150,60,0.6));transition:opacity 180ms linear, transform 180ms linear;}
+#flame {opacity:var(--flame-visible,1);}
+
+.flame path{transition:transform 180ms linear, opacity 180ms linear}
+
+/* when candle is off */
+.candle.off #flame{
+  display: none; /* completely hide the flame when off */
+  opacity: 0;
+  transform: none;
+}
+.candle.off .wick{background:#1a1a1a}
+
+/* glow changes with brightness */
+:root{
+  --glow-size: calc(24px * var(--flame-brightness));
+}
+
+footer{margin-top:14px;color:var(--muted);font-size:0.92rem}
+
+/* Options dropdown styling */
+.options{width:100%;max-width:760px;margin-top:8px}
+.options-summary{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+  padding:10px 12px;border-radius:10px;cursor:pointer;list-style:none;border:1px solid rgba(255,255,255,0.03);font-weight:600;
+}
+.options[open] .options-summary{box-shadow:0 6px 24px rgba(0,0,0,0.5)}
+.options-panel{display:flex;flex-wrap:wrap;gap:10px;padding:12px;margin-top:8px;background:rgba(255,255,255,0.02);border-radius:10px}
+
+/* file / color inputs visual polish */
+input[type="file"]{background:transparent;color:var(--muted)}
+input[type="color"]{width:40px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);padding:2px}
+
+/* fullscreen mode: hide surrounding UI and make scene fill viewport */
+.fullscreen-mode header,
+.fullscreen-mode .controls,
+.fullscreen-mode footer,
+.fullscreen-mode .options { display: none !important; }
+
+.fullscreen-mode .app{padding:0;margin:0}
+.fullscreen-mode .stage{margin:0;height:100vh;align-items:center}
+.fullscreen-mode .scene{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  border-radius:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:none;
+  /* keep the same layered background in fullscreen */
+  background: var(--scene-color), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+  z-index:9999;
+}
+
+/* Keep candle at its normal size in fullscreen. 
+   The flame is hidden when .candle.off is set (handled elsewhere). */
+.fullscreen-mode .candle{
+  width:120px;
+  height:260px;
+  transform:none;
+}
+.fullscreen-mode .candle .body{
+  height:220px;
+  border-radius:16px;
+}
+
+/* .fullscreen-mode .candle .flame{
+  /* no forced scaling here; flame hiding is controlled by .candle.off #flame */
+/* }
+
+/* ensure overlay still covers scene for darkness control */
+.fullscreen-mode .overlay{transition:background 240ms ease}
+
+/* restore pointer cursor for exiting (escape still works) */
+.fullscreen-mode .scene{cursor:default}
+
+/* responsive */
+@media (max-width:540px){
+  .controls{gap:8px}
+  .control-row span{min-width:90px}
+  .scene{width:280px;height:420px}
+}
+
+/* when custom skin applied, ensure body's own styles are preserved but image covers */
+.candle.custom-skin .body{background-size:cover;background-position:center}
+
+.gotcha-screen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.98));
+  z-index:10000;
+  cursor:pointer;
+}
+.gotcha-content{
+  color:#fff;
+  font-size:clamp(36px, 12vw, 140px);
+  font-weight:900;
+  letter-spacing:0.06em;
+  text-align:center;
+  text-transform:uppercase;
+  padding:20px 32px;
+  background:rgba(255,255,255,0.03);
+  border-radius:12px;
+  box-shadow:0 10px 50px rgba(0,0,0,0.6);
+}

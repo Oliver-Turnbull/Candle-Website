@@ -1,0 +1,7 @@
+Clean up files 
+	EG add asset folder etc
+Add a clock to fullscreen
+Get candle animation to look clean
+Add a little quotes afirmations box thing that changes every selcted tiem period
+easter eggs galore
+Countdowns
